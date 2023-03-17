@@ -12,6 +12,3 @@ services:
       - localnetwork
 networks:
   localnetwork:
-
-
-
