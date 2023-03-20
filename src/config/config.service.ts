@@ -28,7 +28,14 @@ class ConfigService {
     const mode = this.getValue('MODE');
     return mode != 'DEV';
   }
-
+  public getPrismaPostgresUrl(): string {
+    return `postgresql://${this.getValue('POSTGRES_USER')}:${this.getValue(
+      'POSTGRES_PASSWORD',
+    )}@${this.getValue('POSTGRES_HOST')}:${this.getValue(
+      'POSTGRES_PORT',
+    )}/${this.getValue('POSTGRES_DATABASE')}?schema=public`;
+    // "postgresql://postgres:postgres@localhost:5434/nest?schema=public"
+  }
   public getTypeOrmConfig(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
