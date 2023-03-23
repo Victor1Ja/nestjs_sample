@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-
+// * Singleton config module
+// ! in this repo is deprecated in order to @nestjs/config at least when using prisma
 require('dotenv').config();
 
 class ConfigService {
