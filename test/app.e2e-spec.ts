@@ -4,12 +4,12 @@ import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { EditUserDto } from '../src/user/dto';
 
 describe('App e2e', () => {
   const path = 'http://localhost:3334';
   let app: INestApplication;
   let prisma: PrismaService;
-  let token: string;
   pactum.request.setBaseUrl(path);
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -108,6 +108,22 @@ describe('App e2e', () => {
           .spec()
           .get(`/users/me`)
           .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectStatus(200);
+      });
+    });
+    describe('Edit User', () => {
+      it('should edit current user', () => {
+        const editDto: EditUserDto = {
+          firstName: 'Victor J',
+          lastName: 'Lopez Roque',
+        };
+        return pactum
+          .spec()
+          .patch(`/users`)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .withBody(editDto)
+          .expectBodyContains(editDto.firstName)
+          .expectBodyContains(editDto.lastName)
           .expectStatus(200);
       });
     });
