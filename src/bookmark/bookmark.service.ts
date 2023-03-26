@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { BookmarkDto } from './dto/bookmark.dto';
+import { BookmarkDto, EditBookmarkDto } from './dto/bookmark.dto';
 
 @Injectable()
 export class BookmarkService {
@@ -11,21 +11,31 @@ export class BookmarkService {
 
   createBookmark(userId: number, dto: BookmarkDto) {
     const bookmark = { ...dto, userId: userId };
-    this.prisma.bookmark.create({ data: { ...bookmark } });
+    return this.prisma.bookmark.create({ data: { ...bookmark } });
   }
 
-  getBookmarkById(userId: number, bookmarkId: number) {
-    return this.prisma.bookmark.findFirst({
-      where: { userId: userId, id: bookmarkId },
-    });
-  }
-
-  editBookmarkById(userId: number, bookmarkId: number, dto: BookmarkDto) {
+  async getBookmarkById(userId: number, bookmarkId: number) {
     try {
-      const bookmark = this.prisma.bookmark.findFirst({
+      const bookmark = await this.prisma.bookmark.findFirst({
         where: { userId: userId, id: bookmarkId },
       });
-      if (bookmark === undefined) {
+      if (!bookmark) throw new NotFoundException(' Bookmark not found');
+      return bookmark;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async editBookmarkById(
+    userId: number,
+    bookmarkId: number,
+    dto: EditBookmarkDto,
+  ) {
+    try {
+      const bookmark = await this.prisma.bookmark.findFirst({
+        where: { userId: userId, id: bookmarkId },
+      });
+      if (!bookmark) {
         throw new NotFoundException(' Bookmark not found');
       }
 

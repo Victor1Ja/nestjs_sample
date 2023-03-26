@@ -12,7 +12,7 @@ import {
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
 import { BookmarkService } from './bookmark.service';
-import { BookmarkDto } from './dto/bookmark.dto';
+import { BookmarkDto, EditBookmarkDto } from './dto/bookmark.dto';
 @UseGuards(JwtGuard)
 @Controller('bookmarks')
 export class BookmarkController {
@@ -38,7 +38,7 @@ export class BookmarkController {
   @Patch(':id')
   editBookmarkById(
     @GetUser('id') userId: number,
-    @Body() dto: BookmarkDto,
+    @Body() dto: EditBookmarkDto,
     @Param('id', ParseIntPipe) bookmarkId: number,
   ) {
     return this.bookmarkService.editBookmarkById(userId, bookmarkId, dto);
