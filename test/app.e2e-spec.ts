@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
+import { BookmarkDto } from '../src/bookmark/dto/bookmark.dto';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { EditUserDto } from '../src/user/dto';
 
@@ -102,6 +103,11 @@ describe('App e2e', () => {
     });
   });
   describe('User', () => {
+    describe('Auth check', () => {
+      it('should throw auth error', () => {
+        return pactum.spec().get(`/users/me`).expectStatus(401);
+      });
+    });
     describe('Get me', () => {
       it('should get current user', () => {
         return pactum
@@ -127,13 +133,90 @@ describe('App e2e', () => {
           .expectStatus(200);
       });
     });
-    describe('Edit user', () => {});
   });
   describe('Bookmark', () => {
-    describe('Create Bookmarks', () => {});
-    describe('Get Bookmarks', () => {});
-    describe('Get Bookmark by id', () => {});
-    describe('Edit Bookmark', () => {});
-    describe('Delete Bookmark', () => {});
+    const dto: BookmarkDto = {
+      link: 'https://google.com',
+      title: 'Google',
+      description: ' description',
+    };
+    describe('Auth check', () => {
+      it('should throw auth error', () => {
+        return pactum.spec().get(`/bookmarks`).expectStatus(401);
+      });
+    });
+    describe('Create Bookmarks', () => {
+      it('Should create one', () => {
+        return pactum
+          .spec()
+          .post(`/bookmarks`)
+          .withBody({ ...dto })
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .stores('BookmarkId', 'id')
+          .expectStatus(201);
+      });
+      it('Should create a second one', () => {
+        return pactum
+          .spec()
+          .post(`/bookmarks`)
+          .withBody({ ...dto })
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .stores('BookmarkId2', 'id')
+          .expectStatus(201);
+      });
+    });
+    describe('Get Bookmarks', () => {
+      it('Should get all', () => {
+        return pactum
+          .spec()
+          .get(`/bookmarks`)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectStatus(200);
+      });
+    });
+    describe('Get Bookmark by id', () => {
+      it('Should get one', () => {
+        return pactum
+          .spec()
+          .get(`/bookmarks/$S{BookmarkId}`)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectStatus(200);
+      });
+    });
+    describe('Edit Bookmark', () => {
+      it('Should edit', () => {
+        const editDto = { description: 'New Description' };
+        return pactum
+          .spec()
+          .patch(`/bookmarks/$S{BookmarkId2}`)
+          .withBody(editDto)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectBodyContains(editDto.description)
+          .expectStatus(200);
+      });
+    });
+    describe('Delete Bookmark', () => {
+      it('Should delete one', () => {
+        return pactum
+          .spec()
+          .delete(`/bookmarks/$S{BookmarkId2}`)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectStatus(200);
+      });
+      it('Should not exist by getting  it', () => {
+        return pactum
+          .spec()
+          .get(`/bookmarks/$S{BookmarkId2}`)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectStatus(404);
+      });
+      it('Should not exist by editing it', () => {
+        return pactum
+          .spec()
+          .patch(`/bookmarks/$S{BookmarkId2}`)
+          .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
+          .expectStatus(404);
+      });
+    });
   });
 });
