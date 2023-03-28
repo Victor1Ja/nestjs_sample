@@ -201,7 +201,7 @@ describe('App e2e', () => {
           .spec()
           .delete(`/bookmarks/$S{BookmarkId2}`)
           .withHeaders({ Authorization: ' Bearer $S{UserAt}' })
-          .expectStatus(200);
+          .expectStatus(204);
       });
       it('Should not exist by getting  it', () => {
         return pactum
