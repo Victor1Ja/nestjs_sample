@@ -1,6 +1,4 @@
 
-docker compose up dev-db -d
-
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
@@ -27,7 +25,16 @@ docker compose up dev-db -d
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a simple CURD app with JWT auth made in [Nest](https://github.com/nestjs/nest) guided with the freecodecamp [course]().
+
+## Personal gain 
+By making this app I learn.
+- The core fundamentals of nest and how are organized the files in a nest project.
+- How use Prisma with postgresql, defining models with one to one, many to one and many to many relationships.
+- How use postgresql in docker container.
+- How use docker compose to manage containers
+- How containerized a nest app
+- How to run a nest app with it respective db on containers.
 
 ## Installation
 
