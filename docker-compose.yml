@@ -1,24 +1,73 @@
 version: '3.8'
 services:
+  backend-nestjs:
+    container_name: nestjs_app
+    restart: always
+    build: .
+    # environment:
+    #   - APP_ENV=development
+    #   - APP_PORT=9000
+    volumes:
+      - ./src:/home/app/src
+      - ./test:/home/app/test
+    working_dir: /home/app
+    ports:
+      - "3333:3333"
+    links:
+      - dev-db
+    depends_on:
+      - dev-db
+    networks:
+      - devnetwork
+  backend-nestjs-test:
+    container_name: nestjs_app_test
+    restart: always
+    build: ./dockerfile.test
+    # environment:
+    #   - APP_ENV=development
+    #   - APP_PORT=9000
+    volumes:
+      - ./src:/home/app/src
+      - ./test:/home/app/test
+    working_dir: /home/app
+    ports:
+      - "3334:3333" 
+    links:
+      - test-db
+    depends_on:
+      - test-db
+    networks:
+      - testnetwork
   dev-db:
+    container_name: dev_db_postgres13
     image: docker.uclv.cu/postgres:13
     ports:
-      - 5434:5432
+      - 5433:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nest
     networks:
-      - localnetwork
+      - devnetwork
+    volumes:
+      - psql_data:/var/lib/mysql
+    expose:
+      - '5432'
   test-db:
+    container_name: test_db_postgres13
     image: docker.uclv.cu/postgres:13
     ports:
       - 5435:5432
+    expose:
+      - 5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: nest
     networks:
-      - localnetwork
+      - testnetwork
+volumes:
+  psql_data:
 networks:
-  localnetwork:
+  testnetwork:
+  devnetwork:
